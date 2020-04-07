@@ -1,17 +1,18 @@
 import os
-from config import app, db, jsonify, request, API_KEY, ALLOWED_EXTENSIONS
+from config import app, db, jsonify, request, API_KEY, ALLOWED_EXTENSIONS, azure_storage, AZURE_CONTAINER_NAME
 import models
-from flask import render_template, url_for, redirect, send_from_directory
+from flask import render_template, url_for, redirect, send_file
 from werkzeug.utils import secure_filename
 from translate.languages import show_all_languages_translation
 from translate.translate import Translator
 import requests
+from io import BytesIO
 
 # for uploaded files
 UPLOAD_FOLDER = r'files/'
 
 # for translated files
-TRANSLATED = r'files/translated/'
+TRANSLATED_FOLDER = r'files/translated/'
 
 # for uploaded files
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -24,24 +25,35 @@ def extensions(f_name):
 
 
 # add language code to file name and set new path for translated files
-def path_for_translated(path, lang):
-    path = path.split('.')
-    path.insert(-1, lang)
-    path = '.'.join(path).split('/')
-    path.insert(-1, 'translated')
-    return '/'.join(path)
+def name_for_translated(lang, path=None, f_name=None):
+    if f_name is not None:
+        f_name = f_name.split('.')
+        f_name.insert(-1, lang)
+        return '.'.join(f_name)
+    else:
+        path = path.split('.')
+        path.insert(-1, lang)
+        path = '.'.join(path).split('/')
+        path.insert(-1, 'translated')
+        return '/'.join(path)
 
 
-# download file using name from database
-@app.route('/download/', methods=['POST'])
+# download translated file
+@app.route('/download', methods=['POST'])
 def download():
     if request.method == 'POST':
         f_id = request.form['f_id']
         schema = models.FileSchema()
-        url = models.File.query.get(f_id)
-        data = schema.dump(url)
+        file = models.File.query.get(f_id)
+        data = schema.dump(file)
         translated = data['translated_file']
-        return send_from_directory('', translated, as_attachment=True)
+
+        # download a file from memory
+        content = azure_storage.block_blob_service.get_blob_to_bytes(container_name=AZURE_CONTAINER_NAME,
+                                                                     blob_name='translated/' + translated, ).content
+        s = BytesIO(content)
+        return send_file(s, as_attachment=True, attachment_filename=translated)
+
     return redirect(url_for('upload'))
 
 
@@ -66,7 +78,6 @@ def add_file(original, translated):
         data = {'id': new_file.id,
                 'original_file': original,
                 'translated': translated}
-
         success = True
     except Exception as e:
         error = str(e)
@@ -77,18 +88,33 @@ def add_file(original, translated):
 
 
 def translate_subtitles(file, lang):
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))  # save original file
+    original_filename = secure_filename(file.filename)  # source file name
+    path_to_original_file = os.path.join(UPLOAD_FOLDER + original_filename)  # path to source file
+
+    file.save(os.path.join(UPLOAD_FOLDER, original_filename))  # save source file locally (temporarily)
+
+    # save file to azure blob storage
+    azure_storage.block_blob_service.create_blob_from_path(container_name=AZURE_CONTAINER_NAME,
+                                                           blob_name='original/' + file.filename,
+                                                           file_path=path_to_original_file)
 
     # set new name and path for translated file
-    out_file_name = path_for_translated(os.path.join(app.config['UPLOAD_FOLDER'] + filename), lang)
+    translated_file_name = name_for_translated(lang=lang, f_name=original_filename)
+    translated_file_path = os.path.join(TRANSLATED_FOLDER, translated_file_name)
 
-    tr = Translator(API_KEY, os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    translate = tr.translate_all(lang, out_file_name)  # translate function
+    # translate subtitles
+    tr = Translator(API_KEY, path_to_original_file)
+    tr.translate_all(lang, translated_file_path)
 
-    add_file(os.path.join(app.config['UPLOAD_FOLDER'], filename), out_file_name)
+    # upload translated file to azure
+    azure_storage.block_blob_service.create_blob_from_path(container_name=AZURE_CONTAINER_NAME,
+                                                           blob_name='translated/' + translated_file_name,
+                                                           file_path=translated_file_path)
+    # remove temporary files
+    os.remove(path_to_original_file)
+    os.remove(translated_file_path)
 
-    return translate
+    add_file(original_filename, translated_file_name)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -97,8 +123,7 @@ def upload():
     data = {'languages': show_all_languages_translation(),
             'error': '',
             'translated': '',
-            'db_content': [],
-            }
+            'db_content': []}
 
     file_list = requests.get('{}files'.format(BASE_URL)).json()
 
@@ -107,7 +132,6 @@ def upload():
     if request.method == 'POST':
         file = request.files['file']
         lang = request.form['dest_lang']
-
         if (file.filename == '' and lang != '') or (file.filename != '' and lang == ''):
             data['error'] = 'Please choose file and language.'
 
