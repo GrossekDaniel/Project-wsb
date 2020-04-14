@@ -26,7 +26,12 @@ app.config["SQLALCHEMY_ECHO"] = True
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
+SQLALCHEMY_ENGINE_OPTIONS = {
+    'pool_size': 1000,
+    'max_overflow': 2000}
+
+db = SQLAlchemy(app, engine_options=SQLALCHEMY_ENGINE_OPTIONS)
+
 ma = Marshmallow(app)
 
 migrate = Migrate(app, db)
