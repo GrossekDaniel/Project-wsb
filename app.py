@@ -7,6 +7,7 @@ from translate.languages import show_all_languages_translation
 from translate.translate import Translator
 import requests
 from io import BytesIO
+import datetime
 
 # for uploaded files
 UPLOAD_FOLDER = r'files/'
@@ -36,6 +37,12 @@ def name_for_translated(lang, path=None, f_name=None):
         path = '.'.join(path).split('/')
         path.insert(-1, 'translated')
         return '/'.join(path)
+
+
+def add_timestamp(file_name):
+    file_name = file_name.split('.')
+    file_name.insert(-1, str(datetime.datetime.now().timestamp()))
+    return '.'.join(file_name)
 
 
 # download translated file
@@ -89,6 +96,7 @@ def add_file(original, translated):
 
 def translate_subtitles(file, lang):
     original_filename = secure_filename(file.filename)  # source file name
+    original_filename = add_timestamp(original_filename)
     path_to_original_file = os.path.join(UPLOAD_FOLDER + original_filename)  # path to source file
 
     file.save(os.path.join(UPLOAD_FOLDER, original_filename))  # save source file locally (temporarily)
