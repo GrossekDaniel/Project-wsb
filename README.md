@@ -4,6 +4,7 @@ Aplikacją w projekcie jest translator napisów. Aplikacja pozwala użytkownikow
 ![](0.png)
 Działanie aplikacji opiera się na wrzuceniu przez użytkownika pliku z napisami i określeniu języka docelowego. Po wybraniu przycisku "Translate" plik trafia na dysk w App Service. Tam jest otwierany i odczytywany linijka po linijce.
 ![](1.png)
+
 Pliki srt posiadają numer grupy i zakres czasu podczas którego napisy będą wyświetlane na ekranie. Następnie dodawana jest linijka odstępu i algorytm zapętlający cały proces. Algorytm odczytuje za pomocą generatora plik linijka po linijce, jeśli trafi na tekst, wtedy zapisuje do momentu aż nie trafi na pustą linię. Jeśli w kolejnych liniach znajduje się tekst, wtedy są one łączone i wysyłane do tłumaczenia (jeśli w następnej nie ma tekstu, wtedy wysyła tylko tę jedną, do pojawienia się linii bez tekstu. Linijkę bez tekstu zapisuje do nowego pliku).
 #### Przykład:
 ![](2.png)
