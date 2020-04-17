@@ -19,11 +19,11 @@ Do wdrożenia aplikacji wykorzystano następujące usługi chmurowe Azure:
 * Cognitive Service (TextTranslation)
 * Storage Account
 
-### Plan i koszty usługi Azure App Service
+#### Plan i koszty usługi Azure App Service
 
-### Plan i koszty usługi Azure Database for PostreSQL
+#### Plan i koszty usługi Azure Database for PostreSQL
 
-### Plan i koszty usługi Cognitive Service (TextTranslation)
+#### Plan i koszty usługi Cognitive Service (TextTranslation)
 
-### Plan i koszty usługi Storage Account
+#### Plan i koszty usługi Storage Account
 
