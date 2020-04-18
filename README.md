@@ -38,3 +38,4 @@ Konta magazynu generują szacowane miesięczne koszty w wysokości 20.80 USD na 
 Oszacowany miesięczny koszt utrzymania postawionej aplikacji (w wybranym planie z możliwością skalowania) - wszystkich usług wraz z dodatkami do poszczególnych z nich - dobre miesięczne koszty na przykład za SSL wynosi 301.10 USD.
 ![](7.png)
 
+## Testy
