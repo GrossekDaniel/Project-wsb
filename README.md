@@ -20,10 +20,21 @@ Do wdrożenia aplikacji wykorzystano następujące usługi chmurowe Azure:
 * Storage Account
 
 #### Plan i koszty usługi Azure App Service
+Przy wybranym planie usługi App Service w lokalizacji West Europe, System operacyjny Linux, plan podstawowy - koszty prezentują się nastęująco (13.14  USD).
+![](4.png)
 
 #### Plan i koszty usługi Azure Database for PostreSQL
+Najwięcej miesięcznych kosztów generuje baza danych (208.63 USD) przy planie Memory Optimized uwzględniającym skalowanie w razie potrzeby. Lokalizacja West Europe, plan miesięczny "Pay as you go".
+![](5.png)
 
 #### Plan i koszty usługi Cognitive Service (TextTranslation)
+Usługa w wersji free uwzględnia miesięcznie do 2.000.000 przetłumaczonych wyrazów.
 
 #### Plan i koszty usługi Storage Account
+Konta magazynu generują szacowane miesięczne koszty w wysokości 20.80 USD na miesięcznym planie "Pay as you go" w lokalizacji East Europe.
+![](6.png)
+
+#### Szacowany miesięczne koszty wszystkich wykorzystanych usług
+Oszacowany miesięczny koszt utrzymania postawionej aplikacji (w wybranym planie z możliwością skalowania) - wszystkich usług wraz z dodatkami do poszczególnych z nich - dobre miesięczne koszty na przykład za SSL wynosi 244.89 USD.
+![](7.png)
 
