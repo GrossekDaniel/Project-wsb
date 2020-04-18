@@ -1,6 +1,6 @@
 # Dokumentacja
 ## O aplikacji
-Aplikacją w projekcie jest translator napisów. Aplikacja pozwala użytkownikowi dodać własny plik srt i przetłumaczyć je z dowolnego języka (w jednym pliku może być nawet kilka różnych języków - aplikacja je rozpozna) na inny dowolny język.
+Aplikacją w projekcie jest translator napisów. Aplikacja pozwala użytkownikowi dodać własny plik srt i przetłumaczyć z dowolnego języka (w jednym pliku może być nawet kilka różnych języków - aplikacja je rozpozna) na inny dowolny język.
 ![](0.png)
 Działanie aplikacji opiera się na wrzuceniu przez użytkownika pliku z napisami i określeniu języka docelowego. Po wybraniu przycisku "Translate" plik trafia na dysk w App Service. Tam jest otwierany i odczytywany linijka po linijce.
 ![](1.png)
