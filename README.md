@@ -29,7 +29,7 @@ Najwięcej miesięcznych kosztów generuje baza danych (208.63 USD) przy planie 
 ![](5.png)
 
 #### Plan i koszty usługi Cognitive Service (TextTranslation)
-Usługa w wersji free uwzględnia miesięcznie do 2.000.000 przetłumaczonych wyrazów.
+Usługa w wersji free uwzględnia miesięcznie do 2.000.000 przetłumaczonych znaków.
 
 #### Plan i koszty usługi Storage Account
 Konta magazynu generują szacowane miesięczne koszty w wysokości 20.80 USD na miesięcznym planie "Pay as you go" w lokalizacji East US.
