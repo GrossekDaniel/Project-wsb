@@ -78,3 +78,5 @@ Oszacowany miesięczny koszt utrzymania postawionej aplikacji (w wybranym planie
 ![](7.png)
 
 ## Testy
+Działanie aplikacji przetestowane z wykorzystaniem JMeter. Testy odbyły się na planie, na jaki pozwoliły środki studenckiej subskrypcji. Wszystkie zapytania trafiły do serwera i zostały prawidłowo obsłużone, nie powodując problemów z działaniem aplikacji.
+![](8.png)
