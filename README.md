@@ -59,7 +59,7 @@ Do wdrożenia aplikacji wykorzystano następujące usługi chmurowe Azure:
 
 #### Wyliczone koszty są dość wysokie, aplikację równie dobrze można postawić na darmowym planie F1 lub tańszym B1 (ze skalowaniem ręcznym) w App Service oraz bazą danych tańszą o połowę - jednak dla wszystkich usług wybraliśmy takie opcje, które umożliwiają skalowanie automatyczne i poradzą sobie z obsłużeniem 10.000 użytkowników jednocześnie.
 #### Plan i koszty usługi Azure App Service
-Przy wybranym planie usługi App Service w lokalizacji West Europe, System operacyjny Linux, plan standardowy S1 z automatycznym skalowaniem - koszty prezentują się nastęująco (69.35  USD).
+Przy wybranym planie usługi App Service w lokalizacji West Europe, System operacyjny Linux, plan standardowy S1 z automatycznym skalowaniem - koszty prezentują się następująco (69.35  USD).
 ![](4.png)
 
 #### Plan i koszty usługi Azure Database for PostreSQL
