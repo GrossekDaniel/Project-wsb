@@ -1,16 +1,54 @@
 # Dokumentacja
 ## O aplikacji
-Aplikacją w projekcie jest translator napisów. Aplikacja pozwala użytkownikowi dodać własny plik srt i przetłumaczyć z dowolnego języka (w jednym pliku może być nawet kilka różnych języków - aplikacja je rozpozna) na inny dowolny język.
+Aplikacją w projekcie jest translator napisów. Aplikacja pozwala użytkownikowi dodać własny plik z napisami w 
+formacie .srt i przetłumaczyć z dowolnego języka (w jednym pliku może być nawet kilka różnych języków - 
+aplikacja je rozpozna) na język wybrany przez użytkownika.
 ![](0.png)
-Działanie aplikacji opiera się na wrzuceniu przez użytkownika pliku z napisami i określeniu języka docelowego. Po wybraniu przycisku "Translate" plik trafia na dysk w App Service. Tam jest otwierany i odczytywany linijka po linijce.
+
+#### Upload
+Użytkownik uploaduje plik z napisami na serwer i określa język docelowy. Po kliknięciu przycisku "Translate" 
+plik tymczasowo trafia do lokalnego magazynu danych w App Service. Tam do nazwy oryginalnego pliku jest doklejany timestamp, 
+aby zapobiec błędom, gdy więcej użytkowników wgrywa ten sam plik w krótkich odstępach czasu. 
+Tworzona jest również nazwa nowego pliku (nazwa oryginalnego pliku + kod języka + .srt).
+Oryginalny plik jest wgrywany do kontenera na Koncie Magazynu do katalogu "original", a jego lokalna kopia przekazywana do tłumaczenia.
+Po zakończeniu procesu nowy plik jest także uploadowany do kontenera, ale tym razem do katalogu "translated". 
+Ten przetłumaczony również jest zapisywany tymczasowo lokalnie. Na koniec obie kopie plików są usuwane, a ich nazwy zapisywane w bazie danych.
 ![](1.png)
 
-Pliki srt posiadają numer grupy i zakres czasu podczas którego napisy będą wyświetlane na ekranie. Następnie dodawana jest linijka odstępu i algorytm zapętlający cały proces. Algorytm odczytuje za pomocą generatora plik linijka po linijce, jeśli trafi na tekst, wtedy zapisuje do momentu aż nie trafi na pustą linię. Jeśli w kolejnych liniach znajduje się tekst, wtedy są one łączone i wysyłane do tłumaczenia (jeśli w następnej nie ma tekstu, wtedy wysyła tylko tę jedną, do pojawienia się linii bez tekstu. Linijkę bez tekstu zapisuje do nowego pliku).
-#### Przykład:
+
+#### Zasada działania
+Zawartość pliku .srt składa się z czterech części:
+* numer grupy,
+* zakres czasu podczas którego napisy będą wyświetlane na ekranie,
+* napisy,
+* pusta linia oznaczająca koniec grupy.
+
+Na początku jest określane kodowanie znaków w pliku w celu zmniejszenia ryzyka pojawienia się błędu. Następnie plik jest odczytywany linia po linii.
+Najpierw jest odczytywana pierwsza linia, która zawiera numer grupy. Następnie jest uruchamiana nieskończona pętla while.    
+
+W każdej iteracji działa kolejna pętla while, która odczytuje każdą z grup w pliku. Działa ona dopóki nie napotka znaku nowej linii.
+W każdej iteracji za pomocą wyrażenia regularnego jest sprawdzane, czy w aktualnej linii znajduje się tekst.
+Jeśli tak jest, to dodaje go do listy, w przeciwnym wypadku linia jest "wyrzucana" i zapisywana w nowym pliku jako niezmieniona.
+W celu zachowania spójności tłumaczenia każda kolejna linia zawierająca tekst w obrębie jednej grupy jest dodawana do listy. Jeśli algorytm napotka znak nowej linii, to wewnętrzna pętla while zostaje przerwana.    
+
+W kolejnym kroku sprawdzane jest, czy lista zawiera tekst, jeśli tak jest, to jest on przekazywany do funkcji, 
+która ma za zadanie odpytać usługę translatora za pomocą metody POST protokołu HTTP. 
+W ciele zapytania jest przekazywana zawartość listy. Język źródłowy tekstu jest automatycznie wykrywany przez usługę. 
+W odpowiedzi serwer zwraca przetłumaczony tekst (na język żądany przez użytkownika), który zostaje również "wyrzucony" z funkcji i 
+zapisany do nowego pliku. Na koniec iteracji głównej pętli wyrzucana jest pusta linia, czyści się lista zawierająca napisy oraz odczytywana jest kolejna linijka pliku.
+Główna pętla działa aż do napotkania wyjątku StopIteration, który w tym przypadku jest równoznaczy z końcem pliku. 
+Na koniec działania algorytmu tekst, który pozostał jest tłumaczony i również zapisywany w nowym pliku.
+ 
+
+#### Przykład
 ![](2.png)
 
-Linijki 26 i 27 zapisują się bez zmieniania do nowego pliku. Linijki 28 i 29 zostają przetłumaczone i zapisane do nowego pliku.
-Po przetłumaczeniu na dysku w App Service tworzy się nowy plik. Następnie napisy są wysyłane do konta magazynu i usuwane z dysku w App Service. W bazie danych pojawiają się nazwy plików i ich lokalizacje w Storage. Przy pobieraniu przez użytkownika, nazwa pliku jest wyszukiwana w Storage, plik jest ładowany do pamięci komputera i wysyłany do użytkownika.
+Linijki 25, 26 i 27 zapisują się bez zmieniania. Linijki 28 i 29 zostają przetłumaczone i zapisane do nowego pliku.
+
+#### Download
+Przy pobieraniu przez użytkownika, nazwa pliku zapisana w bazie jest wyszukiwana w Storage, plik jest ładowany do pamięci komputera i 
+wysyłany do użytkownika.
+
 
 ## Koszty
 Do wdrożenia aplikacji wykorzystano następujące usługi chmurowe Azure: 
