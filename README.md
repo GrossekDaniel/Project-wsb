@@ -80,3 +80,5 @@ Oszacowany miesięczny koszt utrzymania postawionej aplikacji (w wybranym planie
 ## Testy
 Działanie aplikacji przetestowane z wykorzystaniem JMeter. Testy odbyły się na planie, na jaki pozwoliły środki studenckiej subskrypcji. Wszystkie zapytania trafiły do serwera i zostały prawidłowo obsłużone, nie powodując problemów z działaniem aplikacji.
 ![](8.png)
+#### Na subksrypcji Azure dla studentów występuje problem z planami związanymi ze skalowaniem - brak dostępnych regionów - sprawdzane ostatnio 23.04. Aktualnie nie przechodzi plan dla żadnej lokalizacji z listy.
+![](9.png)
